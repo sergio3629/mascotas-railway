@@ -76,7 +76,7 @@ export const validateActualizarMascota = [
 		.not()
 		.isEmpty()
 		.isLength({ max: 50 })
-		.matches(/^[A-Za-z\s]+$/),
+		.matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/),
 
 	check(
 		"genero",

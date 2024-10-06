@@ -29,6 +29,28 @@ export const listarRazas = async (req, res) => {
 	}
 };
 
+// Lista las razas asociados a un departamento
+export const listarRazasPorCategoria = async (req, res) => {
+	const { categoriaId } = req.params;
+
+	try {
+		const [razas] = await pool.query(
+			"SELECT * FROM razas WHERE fk_id_categoria = ?",
+			[categoriaId]
+		);
+		if (razas.length > 0) {
+			res.status(200).json(razas);
+		} else {
+			res.status(404).json({
+				status: 404,
+				message: "No hay razas asociados a una categoria"
+			})
+		}
+	} catch (error) {
+		res.status(500).json({ error: "Error al obtener razas." });
+	}
+};
+
 // Registrar Raza
 export const registrarRaza = async (req, res) => {
 	try {

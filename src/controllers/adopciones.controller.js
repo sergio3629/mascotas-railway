@@ -6,76 +6,75 @@ import { validationResult } from "express-validator";
 // Listar Adopciones con detalles asociados y FKs
 export const listarAdopciones = async (req, res) => {
 	try {
-	  // Ejecutar la consulta SQL ajustada para incluir las relaciones correctas
-	  const [result] = await pool.query(`
-		SELECT 
-		  m.id_mascota, 
-		  m.nombre_mascota, 
-		  m.fecha_nacimiento, 
-		  m.descripcion, 
-		  m.esterilizado, 
-		  m.tamano, 
-		  m.peso, 
-		  
-		  -- Obtener categoría a través de la raza
-		  r.fk_id_categoria,
-		  c.nombre_categoria AS categoria,
-		  
-		  -- Datos de la raza
-		  r.nombre_raza AS raza,
-		  
-		  -- Obtener departamento a través del municipio
-		  mu.fk_id_departamento,
-		  d.nombre_departamento AS departamento,
-  
-		  -- Datos del municipio
-		  mu.nombre_municipio AS municipio,
-  
-		  -- Información adicional de la mascota
-		  m.sexo,
-  
-		  -- Datos del usuario adoptante
-		  u.id_usuario, 
-		  u.nombre AS usuario_nombre, 
-		  u.apellido AS usuario_apellido, 
-		  u.correo AS usuario_correo,
-		  u.telefono AS usuario_telefono,
-  
-		  -- Datos de la adopción
-		  a.id_adopcion, 
-		  a.estado AS estado_adopcion,
-		  a.fecha_adopcion_proceso, -- Agregado este campo para obtener la fecha de proceso de adopción
-  
-		  -- Concatenar las imágenes asociadas
-		  GROUP_CONCAT(i.ruta_imagen) AS imagenes
-		FROM mascotas m
-		JOIN adopciones a ON m.id_mascota = a.fk_id_mascota
-		JOIN usuarios u ON a.fk_id_usuario_adoptante = u.id_usuario
-		JOIN razas r ON m.fk_id_raza = r.id_raza
-		LEFT JOIN categorias c ON r.fk_id_categoria = c.id_categoria -- Relación raza -> categoría
-		LEFT JOIN municipios mu ON m.fk_id_municipio = mu.id_municipio
-		LEFT JOIN departamentos d ON mu.fk_id_departamento = d.id_departamento -- Relación municipio -> departamento
-		LEFT JOIN imagenes i ON m.id_mascota = i.fk_id_mascota
-		WHERE m.estado = 'Reservado' AND a.estado = 'proceso de adopcion'
-		GROUP BY m.id_mascota, u.id_usuario, a.id_adopcion;
-	  `);
-  
-	  // Verificar si hay resultados
-	  if (result.length > 0) {
-		res.status(200).json(result);
-	  } else {
-		res.status(404).json({
-		  status: 404,
-		  message: "No se encontraron listas de mascotas con usuarios asociados",
-		});
-	  }
+		// Ejecutar la consulta SQL ajustada para incluir las relaciones correctas
+		const [result] = await pool.query(`
+      SELECT 
+        m.id_mascota, 
+        m.nombre_mascota, 
+        m.fecha_nacimiento, 
+        m.descripcion, 
+        m.esterilizado, 
+        m.tamano, 
+        m.peso, 
+        
+        -- Obtener categoría a través de la raza
+        r.fk_id_categoria,
+        c.nombre_categoria AS categoria,
+        
+        -- Datos de la raza
+        r.nombre_raza AS raza,
+        
+        -- Obtener departamento a través del municipio
+        mu.fk_id_departamento,
+        d.nombre_departamento AS departamento,
+
+        -- Datos del municipio
+        mu.nombre_municipio AS municipio,
+
+        -- Información adicional de la mascota
+        m.sexo,
+
+        -- Datos del usuario adoptante
+        u.id_usuario, 
+        u.nombre AS usuario_nombre, 
+        u.apellido AS usuario_apellido, 
+        u.correo AS usuario_correo,
+        u.telefono AS usuario_telefono,
+
+        -- Datos de la adopción
+        a.id_adopcion, 
+        a.estado AS estado_adopcion,
+
+        -- Concatenar las imágenes asociadas
+        GROUP_CONCAT(i.ruta_imagen) AS imagenes
+      FROM mascotas m
+      JOIN adopciones a ON m.id_mascota = a.fk_id_mascota
+      JOIN usuarios u ON a.fk_id_usuario_adoptante = u.id_usuario
+      JOIN razas r ON m.fk_id_raza = r.id_raza
+      LEFT JOIN categorias c ON r.fk_id_categoria = c.id_categoria -- Relación raza -> categoría
+      LEFT JOIN municipios mu ON m.fk_id_municipio = mu.id_municipio
+      LEFT JOIN departamentos d ON mu.fk_id_departamento = d.id_departamento -- Relación municipio -> departamento
+      LEFT JOIN imagenes i ON m.id_mascota = i.fk_id_mascota
+      WHERE m.estado = 'Reservado' AND a.estado = 'proceso de adopcion'
+      GROUP BY m.id_mascota, u.id_usuario, a.id_adopcion;
+    `);
+
+		// Verificar si hay resultados
+		if (result.length > 0) {
+			res.status(200).json(result);
+		} else {
+			res.status(404).json({
+				status: 404,
+				message: "No se encontraron listas de mascotas con usuarios asociados",
+			});
+		}
 	} catch (error) {
-	  res.status(500).json({
-		status: 500,
-		message: "Error en el sistema: " + error.message,
-	  });
+		res.status(500).json({
+			status: 500,
+			message: "Error en el sistema: " + error.message,
+		});
 	}
-  };
+};
 
 
 // Listar mascotas aceptadas por parte del usuario

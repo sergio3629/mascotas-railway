@@ -105,6 +105,14 @@ export const generarReporteEXCEL = async (req, res) => {
       });
     }
 
+          // Validación: Si se selecciona una categoría, también se debe seleccionar una raza
+          if (categoria && !raza) {
+            return res.status(400).json({
+              status: 400,
+              message: "Debe seleccionar una raza si ha seleccionado una categoría.",
+            });
+          }
+          
     // Construir la consulta SQL con filtros
     let query = `
     SELECT 
@@ -195,4 +203,4 @@ export const generarReporteEXCEL = async (req, res) => {
       message: "Error en el servidor: " + error.message,
     });
   }
-}; 
+};

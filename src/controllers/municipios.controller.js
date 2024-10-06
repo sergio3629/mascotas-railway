@@ -32,6 +32,29 @@ export const listarMunicipios = async (req, res) => {
 	}
 };
 
+// Lista los municipios asociados a un departamento
+export const listarMunicipiosPorDepartamento = async (req, res) => {
+	const { departamentoId } = req.params;
+
+	try {
+		const [municipios] = await pool.query(
+			"SELECT * FROM municipios WHERE fk_id_departamento = ?",
+			[departamentoId]
+		);
+
+		if (municipios.length > 0) {
+			res.status(200).json(municipios);
+		} else {
+			res.status(404).json({
+				status: 404,
+				message: "No hay municipios asociados a un departamento",
+			});
+		}
+	} catch (error) {
+		res.status(500).json({ error: "Error al obtener municipios." });
+	}
+};
+
 // Registrar Municipio
 export const registrarMunicipio = async (req, res) => {
 	try {

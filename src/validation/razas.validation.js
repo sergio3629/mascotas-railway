@@ -6,7 +6,7 @@ export const validateCrearRaza = [
         .not()
         .isEmpty()
         .isString()
-        .matches(/^[a-zA-Z\s]+$/).withMessage('El nombre de la raza solo puede contener letras y espacios.')
+        .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/).withMessage('El nombre de la raza solo puede contener letras y espacios.')
         .isLength({ max: 50 }).withMessage('El nombre de la raza no puede exceder los 50 caracteres.'),
 
     check('fk_id_categoria', 'El ID de la categoría debe ser un número entero válido.')
@@ -20,7 +20,7 @@ export const validateActualizarRaza = [
     check('nombre_raza')
         .optional()
         .isString()
-        .matches(/^[a-zA-Z\s]+$/).withMessage('El nombre de la raza solo puede contener letras y espacios.')
+        .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/).withMessage('El nombre de la raza solo puede contener letras y espacios.')
         .isLength({ max: 50 }).withMessage('El nombre de la raza no puede exceder los 50 caracteres.'),
 
     check('fk_id_categoria')

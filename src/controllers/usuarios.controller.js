@@ -270,9 +270,14 @@ export const Perfil = async (req, res) => {
         const { id_usuario } = req.params;
         const [result] = await pool.query("SELECT * FROM usuarios WHERE id_usuario = ?", [id_usuario]);
 
-		if (result.length > 0) {
-			res.status(200).json(result);
-	}  else {
+        if (result.length > 0) {
+            const usuariosConImagenes = result.map(usuario => ({
+                ...usuario,
+                img: usuario.img ? `${req.protocol}://${req.get('host')}/uploads/${usuario.img}` : null
+            }));
+
+            res.status(200).json(usuariosConImagenes);
+        } else {
             res.status(404).json({
                 status: 404,
                 message: "Usuario no encontrado",
